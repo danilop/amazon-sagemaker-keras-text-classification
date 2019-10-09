@@ -14,13 +14,15 @@ Before we dive into the mechanics of our deep learning model, let’s explore th
 
 Follow these steps to launch a notebook, download and explore the dataset:
 
-1\.	Open the Amazon SageMaker Console, click on ‘Create notebook instance’ and give the notebook a name. For the instance type, I’m going to pick ‘ml.t2.medium’ since our example dataset is small and I don’t intend on using the GPUs for training/inference.
+1\. Open the Amazon SageMaker Console, click on ‘Create notebook instance’ and give the notebook a name. For the instance type, I’m going to pick ‘ml.t3.medium’ since our example dataset is small and we don’t intend on using GPUs for training/inference. We're not planning to use Elastic Inference either, so you can leave the default of ‘none’.
 
-For the IAM role, select ‘Create a new role’ and select the options shown below for the role configuration.
+For the IAM role, select ‘Create a new role’ and select the options shown below for the role configuration. We don't need access to specific S3 buckets, so you can select ‘None’.
 
 ![Amazon SageMaker IAM Role](/images/sm-keras-1.png)
 
-Click ‘Create role’ to create a new role and then hit ‘Create notebook instance’ to submit the request for a new notebook instance.
+Click ‘Create role’ to create a new role. In the ‘Git repositories’ section select the option to clone a public Git repository and use this URL: https://github.com/danilop/amazon-sagemaker-keras-text-classification
+
+Hit ‘Create notebook instance’ to submit the request for a new notebook instance.
 
 **Note:** It usually takes a few minutes for the notebook instance to become available. Once available, the status of the notebook instance will change from ‘Pending’ to ‘InService’. You can move on to the next step while notebook instance is still in 'Pending' state.
 
@@ -28,7 +30,7 @@ Click ‘Create role’ to create a new role and then hit ‘Create notebook ins
 
 From the Amazon SageMaker console, click on the name of the notebook instance you just created:
 
-![SageMaker console instance list](/images/sm-keras-2.png)
+![SageMaker console instance list](/images/sm-keras-2.png) TODO New screenshot
 
 From the notebook instance details page, click on the new role that you just created.
 
@@ -40,34 +42,29 @@ This will open up a new tab showing the IAM role details. Here click on ‘Attac
 
 *Please make sure to check the checkbox next to the policy before hitting `Attach policy`*
 
-3\.	From the Amazon SageMaker console, click ‘Open’ to navigate into the Jupyter notebook. Under ‘New’, select ‘Terminal’. This will open up a terminal session to your notebook instance.
+3\.	From the Amazon SageMaker console, click ‘Open Jupyter’ to navigate into the Jupyter notebook. Under ‘New’, select ‘Terminal’. This will open up a terminal session to your notebook instance.
 
-![SageMaker Notebook Terminal](/images/sm-keras-0.png)
+![SageMaker Notebook Terminal](/images/sm-keras-0.png) TODO New Screenshot with cloned repo
 
-4\. The companion code to this blogpost is on GitHub so let’s go ahead and clone that:
-
-```
-git clone https://github.com/aws-samples/amazon-sagemaker-keras-text-classification.git ./SageMaker/sagemaker-keras-text-classification
-```
-5\.	Switch into the ‘data’ directory
+4\.	Switch into the ‘data’ directory
 
 ```
 cd SageMaker/sagemaker-keras-text-classification/data
 ```
 
-6\. Download and unzip the dataset
+5\. Download and unzip the dataset
 
 ```
 wget https://archive.ics.uci.edu/ml/machine-learning-databases/00359/NewsAggregatorDataset.zip && unzip NewsAggregatorDataset.zip
 ```
 
-7\. Now lets also download and unzip the pre-trained glove embedding files (more on this in a bit):
+6\. Now lets also download and unzip the pre-trained glove embedding files (more on this in a bit):
 
 ```
 wget http://nlp.stanford.edu/data/glove.6B.zip && unzip glove.6B.zip
 ```
 
-8\. Remove the unnecessary files
+7\. Remove the unnecessary files
 
 ```
 rm 2pageSessions.csv glove.6B.200d.txt glove.6B.50d.txt glove.6B.300d.txt glove.6B.zip readme.txt NewsAggregatorDataset.zip && rm -rf __MACOSX/
@@ -75,16 +72,15 @@ rm 2pageSessions.csv glove.6B.200d.txt glove.6B.50d.txt glove.6B.300d.txt glove.
 
 At this point, you should only see two files: ‘glove.6B.100d.txt’ (word embeddings) and ‘newsCorpora.csv’ (dataset) in the this data directory.
 
-9\.	Close the terminal window and go back to the Jupyter notebook web UI. Click on the folder called ‘sagemaker_keras_text_classification’ and launch the notebook within it with the same name. Make sure the kernel you are running is ‘conda_tensforflow_p27’.
+8\. Go back to the Jupyter notebook web UI. You shoul dbe in the folder called ‘sagemaker_keras_text_classification’. Please launch the notebook within it with the same name. Make sure the kernel you are running is ‘conda_tensorflow_p36’.
 
-![SageMaker notebook kernel](/images/sm-keras-5.png)
+![SageMaker notebook kernel](/images/sm-keras-5.png) TODO Update to Python 3.6 - the kernel is now asked when opening the notebook
 
 If it’s not, you can switch it from ‘Kernel -> Change kernel’ menu:
 
-![SageMaker notebook change kernel](/images/sm-keras-6.png)
+![SageMaker notebook change kernel](/images/sm-keras-6.png) TODO Update to Python 3.6 - remove this if kernel is asked when opening the notebook
 
-
-10\.	Once you individually run the cells within this notebook (shift+enter) through ‘Step 1: Data Exploration’, you should see some sample data (Note: do not run all cells within the notebook – the example is designed to be followed one cell at a time):
+9\. Once you individually run the cells within this notebook (shift+enter) through ‘Step 1: Data Exploration’, you should see some sample data (Note: do not run all cells within the notebook – the example is designed to be followed one cell at a time):
 
 ![SageMaker notebook data exploration](/images/sm-keras-7.png)
 
@@ -110,24 +106,28 @@ cd ~
 git clone https://github.com/aws/sagemaker-tensorflow-container.git
 ```
 
-2\. We will be using TensorFlow 1.8.0 so lets switch to the appropriate directory
+2\. We will be using TensorFlow 1.14.0 with Python 3, so lets switch to the appropriate directory
 
 ```
-cd sagemaker-tensorflow-container/docker/1.8.0/base
+cd sagemaker-tensorflow-container/docker/1.14.0/py3
 ```
 
 3\. If you list the directory contents here, you will notice that there are two Dockerfiles - one made for CPU based nodes and another for GPU based. Since, we will be using CPU machines, lets build the CPU docker image
 
+From https://pypi.org/project/tensorflow/1.14.0/#files download
 ```
-docker build -t tensorflow-base:1.8.0-cpu-py2 -f Dockerfile.cpu .
+wget https://files.pythonhosted.org/packages/de/f0/96fb2e0412ae9692dbf400e5b04432885f677ad6241c088ccc5fe7724d69/tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl
+###docker build -t tensorflow-base:1.14.0-cpu-py3 -f Dockerfile.cpu .
+docker build -t tensorflow-base:1.14.0-cpu-py3 --build-arg py_version=3 --build-arg framework_support_installable=tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl -f Dockerfile.cpu .
+
 ```
 
-Building the docker images should not take more than 5-7 minutes. Once finished, you can list the images by running `docker images`. You should see the new base image named `tensorflow-base:1.8.0-cpu-py2`.
+Building the docker images should not take more than (TODO check if it takes 20 minutes) 5-7 minutes. Once finished, you can list the images by running `docker images`. You should see the new base image named `tensorflow-base:1.14.0-cpu-py3`.
 
 4\. Next we create our `final` images by including our code onto the `base` container. In the terminal window, switch to the container directory
 
 ```
-cd ~/SageMaker/sagemaker-keras-text-classification/container/
+cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
 ```
 
 5\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below
@@ -135,7 +135,12 @@ cd ~/SageMaker/sagemaker-keras-text-classification/container/
 ```
 # Build an image that can do training and inference in SageMaker
 
-FROM tensorflow-base:1.8.0-cpu-py2
+FROM tensorflow-base:1.14.0-cpu-py3
+
+RUN apt-get update && \
+    apt-get install -y nginx
+
+RUN pip install gevent gunicorn flask
 
 ENV PATH="/opt/program:${PATH}"
 
@@ -143,6 +148,7 @@ ENV PATH="/opt/program:${PATH}"
 COPY sagemaker_keras_text_classification /opt/program
 WORKDIR /opt/program
 ```
+
 Hit Escape and then `:wq` to save and exit vim.
 
 We start from the `base` image, add the code directory to our path, copy the code into that directory and finally set the WORKDIR to the same path so any subsequent RUN/ENTRYPOINT commands run by Amazon SageMaker will use this directory.
@@ -164,7 +170,7 @@ Once we are finished developing the training portion (in ‘container/train’),
 In the notebook instance terminal window, switch over to the ‘sagemaker-keras-text-classification/data’ directory
 
 ```
-cd ~/SageMaker/sagemaker-keras-text-classification/data
+cd ~/SageMaker/amazon-sagemaker-keras-text-classification/data
 ```
 
  and then run:
@@ -187,9 +193,32 @@ cd ../container/local_test
 
 *Note:* it might take anywhere from 2-3 minutes to complete for the local training to complete.
 
-With an 80/20 split between the training and validation and a simple Feed Forward Neural Network, we get around 85% validation accuracy after two epochs – not a bad start!
+![local training results](/images/sm-keras-8.png) TODO Update screenshot with simpler architecture and lower val_acc
 
-![local training results](/images/sm-keras-8.png)
+With an 80/20 split between the training and validation and a simple Feed Forward Neural Network, we get around 78-80% validation accuracy (val_acc) after two epochs – not a bad start!
+
+Try reaching 83-85% validation accouracy before going to the next step. You can test different network architectures (using different hyperparameters) by editing `~/SageMaker/amazon-sagemaker-keras-text-classification/container/train` and create more docker containers (each with a unique name) that you can train local (you don't need to edit the Dockerfile):
+
+```
+cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
+vim ./train
+docker build -t sagemaker-keras-text-class-{N}units-{M}layers:latest .
+```
+
+Here's the part of the `train` file where you can change the network architecture to have more units or add new layers:
+
+```
+# ------Architecture: MLP------------------------------
+model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dense(2, activation='relu')) # Try 2-32 units (dimensionality)
+# model.add(tf.keras.layers.Dense(2, activation='relu')) # Try adding more layers uncommenting this line and changing the units
+#------------------------------------------------------
+```
+
+*Note:* for each test it might take anywhere from 2-3 minutes to complete for the local training to complete, we recommend you do 2-3 tests and them move forward with the best result you got.
+
+If the network architecture is too "small", then it may be incapable of "learn" from the traning data and accourancy cannot increase beyond a certain point. That is a case of underfitting.
+If the network architecture is too "complex", it can learn to fit to the training data so very well, but then the model is not capable of working on new data points, so the validation accourancy is much lower than the training accourancy.
 
 We now have a saved model called ‘news_breaker.h5’ and the ‘tokenizer.pickle’ file within ‘sagemaker-keras-text-classification/container/local_test /test_dir/model’ – the local directory that we mapped to the ‘/opt/ml’ directory within the container.
 
@@ -208,7 +237,7 @@ This is a simple script that uses the ‘Docker run’ command to start the cont
 5\. Now **open another terminal**, move to the `local_test` directory and run ‘predict.sh’. This script issues a request to the flask app using the test news headline in `input.json`:
 
 ```
-cd SageMaker/sagemaker-keras-text-classification/container/local_test && ./predict.sh input.json application/json
+cd SageMaker/amazon-sagemaker-keras-text-classification/container/local_test && ./predict.sh input.json application/json
 ```
 
 Great! Our model inference implementation responds and is correctly able to categorize this headline as a Health & Medicine story.
