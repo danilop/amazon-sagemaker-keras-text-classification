@@ -32,7 +32,7 @@ Hit ‘Create notebook instance’ to submit the request for a new notebook inst
 
 From the Amazon SageMaker console, click on the name of the notebook instance you just created:
 
-![SageMaker console instance list](/images/sm-keras-new-terminal.png)
+![SageMaker console instance list](/images/sm-keras-2.png)
 
 From the notebook instance details page, click on the new role that you just created.
 
@@ -46,7 +46,7 @@ This will open up a new tab showing the IAM role details. Here click on ‘Attac
 
 3\.	From the Amazon SageMaker console, click ‘Open Jupyter’ to navigate into the Jupyter notebook. Under ‘New’, select ‘Terminal’. This will open up a terminal session to your notebook instance.
 
-![SageMaker Notebook Terminal](/images/sm-keras-0.png) TODO New Screenshot with cloned repo
+![SageMaker Notebook Terminal](/images/sm-keras-new-terminal.png) TODO New Screenshot with cloned repo
 
 4\.	Switch into the ‘data’ directory
 
