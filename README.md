@@ -22,6 +22,8 @@ For the IAM role, select ‘Create a new role’ and select the options shown be
 
 Click ‘Create role’ to create a new role. In the ‘Git repositories’ section select the option to clone a public Git repository and use this URL: https://github.com/danilop/amazon-sagemaker-keras-text-classification
 
+![Amazon SageMaker Git Repo](/images/sm-keras-git.png)
+
 Hit ‘Create notebook instance’ to submit the request for a new notebook instance.
 
 **Note:** It usually takes a few minutes for the notebook instance to become available. Once available, the status of the notebook instance will change from ‘Pending’ to ‘InService’. You can move on to the next step while notebook instance is still in 'Pending' state.
@@ -30,7 +32,7 @@ Hit ‘Create notebook instance’ to submit the request for a new notebook inst
 
 From the Amazon SageMaker console, click on the name of the notebook instance you just created:
 
-![SageMaker console instance list](/images/sm-keras-2.png) TODO New screenshot
+![SageMaker console instance list](/images/sm-keras-new-terminal.png)
 
 From the notebook instance details page, click on the new role that you just created.
 
