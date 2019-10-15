@@ -51,7 +51,7 @@ This will open up a new tab showing the IAM role details. Here click on ‘Attac
 4\.	Switch into the ‘data’ directory
 
 ```
-cd SageMaker/sagemaker-keras-text-classification/data
+cd SageMaker/amazon-sagemaker-keras-text-classification/data
 ```
 
 5\. Download and unzip the dataset
@@ -80,7 +80,7 @@ At this point, you should only see two files: ‘glove.6B.100d.txt’ (word embe
 
 If it’s not, you can switch it from ‘Kernel -> Change kernel’ menu:
 
-![SageMaker notebook change kernel](/images/sm-keras-6.png) TODO Update to Python 3.6 - remove this if kernel is asked when opening the notebook
+![SageMaker notebook change kernel](/images/sm-keras-change-kernel.png) TODO Update to Python 3.6 - remove this if kernel is asked when opening the notebook
 
 9\. Once you individually run the cells within this notebook (shift+enter) through ‘Step 1: Data Exploration’, you should see some sample data (Note: do not run all cells within the notebook – the example is designed to be followed one cell at a time):
 
