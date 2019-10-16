@@ -46,7 +46,7 @@ This will open up a new tab showing the IAM role details. Here click on ‘Attac
 
 3\.	From the Amazon SageMaker console, click ‘Open Jupyter’ to navigate into the Jupyter notebook. Under ‘New’, select ‘Terminal’. This will open up a terminal session to your notebook instance.
 
-![SageMaker Notebook Terminal](/images/sm-keras-new-terminal.png) TODO New Screenshot with cloned repo
+![SageMaker Notebook Terminal](/images/sm-keras-new-terminal.png)
 
 4\.	Switch into the ‘data’ directory
 
@@ -114,25 +114,32 @@ git clone https://github.com/aws/sagemaker-tensorflow-container.git
 cd sagemaker-tensorflow-container/docker/1.14.0/py3
 ```
 
-3\. If you list the directory contents here, you will notice that there are two Dockerfiles - one made for CPU based nodes and another for GPU based. Since, we will be using CPU machines, lets build the CPU docker image
+3\. From https://pypi.org/project/tensorflow/1.14.0/#files download the right wheel file for your architecture (Linux, Python 3.6). In this case, the file name should be:
 
-From https://pypi.org/project/tensorflow/1.14.0/#files download
+`tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl`
+
+To download, copy the link to the file with a right-click in the browser and then use `wget` in the Terminal console, for example:
+
 ```
-wget https://files.pythonhosted.org/packages/de/f0/96fb2e0412ae9692dbf400e5b04432885f677ad6241c088ccc5fe7724d69/tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl
-###docker build -t tensorflow-base:1.14.0-cpu-py3 -f Dockerfile.cpu .
+wget https://files.pythonhosted.org/.../tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl
+```
+
+4\. If you list the directory contents here, you will notice that there are two Dockerfiles - one made for CPU based nodes and another for GPU based. Since, we will be using CPU machines, lets build the CPU docker image
+
+```
 docker build -t tensorflow-base:1.14.0-cpu-py3 --build-arg py_version=3 --build-arg framework_support_installable=tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl -f Dockerfile.cpu .
 
 ```
 
-Building the docker images should not take more than (TODO check if it takes 20 minutes) 5-7 minutes. Once finished, you can list the images by running `docker images`. You should see the new base image named `tensorflow-base:1.14.0-cpu-py3`.
+Building the docker images should take about 20 minutes. Once finished, you can list the images by running `docker images`. You should see the new base image named `tensorflow-base:1.14.0-cpu-py3`.
 
-4\. Next we create our `final` images by including our code onto the `base` container. In the terminal window, switch to the container directory
+5\. Next we create our `final` images by including our code onto the `base` container. In the terminal window, switch to the container directory
 
 ```
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
 ```
 
-5\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below
+6\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below
 
 ```
 # Build an image that can do training and inference in SageMaker
@@ -155,7 +162,7 @@ Hit Escape and then `:wq` to save and exit vim.
 
 We start from the `base` image, add the code directory to our path, copy the code into that directory and finally set the WORKDIR to the same path so any subsequent RUN/ENTRYPOINT commands run by Amazon SageMaker will use this directory.
 
-6\. Build the `final` image
+7\. Build the `final` image
 
 ```
 docker build -t sagemaker-keras-text-class:latest .
@@ -195,7 +202,7 @@ cd ../container/local_test
 
 *Note:* it might take anywhere from 2-3 minutes to complete for the local training to complete.
 
-![local training results](/images/sm-keras-8.png) TODO Update screenshot with simpler architecture and lower val_acc
+![local training results](/images/sagemaker-terminal-local-training.png)
 
 With an 80/20 split between the training and validation and a simple Feed Forward Neural Network, we get around 78-80% validation accuracy (val_acc) after two epochs – not a bad start!
 
