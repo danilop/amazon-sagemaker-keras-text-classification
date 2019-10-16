@@ -32,11 +32,11 @@ Hit ‘Create notebook instance’ to submit the request for a new notebook inst
 
 From the Amazon SageMaker console, click on the name of the notebook instance you just created:
 
-![SageMaker console instance list](/images/sm-keras-2.png)
+![SageMaker console instance list](/images/sagemaker-notebook-list)
 
 From the notebook instance details page, click on the new role that you just created.
 
-![SageMaker console instance details](/images/sm-keras-3.png)
+![SageMaker console instance details](/images/sagemaker-notebook-permissions.png)
 
 This will open up a new tab showing the IAM role details. Here click on ‘Attach policies’ and then search for ‘AmazonEC2ContainerRegistryFullAccess’ policy, select it and then click on ‘Attach policy’.
 
@@ -76,11 +76,11 @@ At this point, you should only see two files: ‘glove.6B.100d.txt’ (word embe
 
 8\. Go back to the Jupyter notebook web UI. You shoul dbe in the folder called ‘sagemaker_keras_text_classification’. Please launch the notebook within it with the same name. Make sure the kernel you are running is ‘conda_tensorflow_p36’.
 
-![SageMaker notebook kernel](/images/sm-keras-5.png) TODO Update to Python 3.6 - the kernel is now asked when opening the notebook
+![SageMaker notebook kernel](/images/sagemaker-notebook-kernel.png)
 
 If it’s not, you can switch it from ‘Kernel -> Change kernel’ menu:
 
-![SageMaker notebook change kernel](/images/sm-keras-change-kernel.png) TODO Update to Python 3.6 - remove this if kernel is asked when opening the notebook
+![SageMaker notebook change kernel](/images/sagemaker-notebook-kernel-change.png)
 
 9\. Once you individually run the cells within this notebook (shift+enter) through ‘Step 1: Data Exploration’, you should see some sample data (Note: do not run all cells within the notebook – the example is designed to be followed one cell at a time):
 
