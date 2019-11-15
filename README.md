@@ -212,7 +212,11 @@ Try reaching 83-85% validation accouracy before going to the next step. You can 
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
 vim ./sagemaker_keras_text_classification/train
 docker build -t sagemaker-keras-text-class-2units-2layers:latest .
+cd ../container/local_test
+./train_local.sh sagemaker-keras-text-class-2units-2layers:latest
 ```
+
+When running training locally multiple times, you should confirm (two times) to "remove write-protected regular file". Those files are the model output of the previous training (the ‘news_breaker.h5’ and the ‘tokenizer.pickle’ files).
 
 Here's the part of the `train` file where you can change the network architecture to have more units or add new layers:
 
