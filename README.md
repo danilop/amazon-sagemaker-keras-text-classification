@@ -32,7 +32,7 @@ Hit ‘Create notebook instance’ to submit the request for a new notebook inst
 
 From the Amazon SageMaker console, click on the name of the notebook instance you just created:
 
-![SageMaker console instance list](/images/sagemaker-notebook-list)
+![SageMaker console instance list](/images/sagemaker-notebook-list.png)
 
 From the notebook instance details page, click on the new role that you just created.
 
