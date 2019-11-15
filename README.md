@@ -210,7 +210,7 @@ Try reaching 83-85% validation accouracy before going to the next step. You can 
 
 ```
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
-vim ./train
+vim ./sagemaker_keras_text_classification/train
 docker build -t sagemaker-keras-text-class-{N}units-{M}layers:latest .
 ```
 
