@@ -94,57 +94,26 @@ Next we define the list of columns contained in this dataset (the format is usua
 
 ### LAB 2: Building the SageMaker TensorFlow Container
 
-Since we are going to be using a custom built container for this workshop, we will need to create it. The Amazon SageMaker notebook instance already comes loaded with Docker. The SageMaker team has also created the [`sagemaker-tensorflow-container`](https://github.com/aws/sagemaker-tensorflow-container) project that makes it super easy for us to build custom TensorFlow containers that are optimized to run on Amazon SageMaker. Similar containers are also available for other widely used ML/DL frameworks as well.
+Since we are going to be using a custom built container for this workshop, we will need to create it. We will use this container for local testing. Once satisfied with local testing, we will push it up to Amazon Container Registery (ECR) where it can pulled from by Amazon SageMaker for training and deployment.
 
-We will first create a `base` TensorFlow container and then add our custom code to create a `final` container. We will use this `final` container for local testing. Once satisfied with local testing, we will push it up to Amazon Container Registery (ECR) where it can pulled from by Amazon SageMaker for training and deployment.
+Instead of building a TensorFlow container from scratch, we are going to use the AWS Deep Learning (DL) Containers. AWS DL Containers are Docker images pre-installed with deep learning frameworks to make it easy to deploy custom machine learning (ML) environments quickly.
 
-1\. Let's start by creating the base TensorFlow container. Go to the notebook instance terminal window, switch to the home directory and clone the `sagemaker-tensorflow-container` repo:
+AWS DL Containers support TensorFlow, PyTorch, and Apache MXNet. We are going to use TensorFlow today. You can deploy AWS DL Containers on Amazon Sagemaker, Amazon Elastic Kubernetes Service (Amazon EKS), self-managed Kubernetes on Amazon EC2, Amazon Elastic Container Service (Amazon ECS). We are going to deploy using SageMaker for training and inference. The containers are available through Amazon Elastic Container Registry (Amazon ECR) and AWS Marketplace at no cost, you pay only for the resources that you use. In this workshop, we a re going to download the AWS DL Containers images via ECR.
 
-```
-cd ~
-```
+All the available AWS DL Containers images are describe din the documentation:
 
-```
-git clone https://github.com/aws/sagemaker-tensorflow-container.git
-```
-
-2\. We will be using TensorFlow 1.14.0 with Python 3, so lets switch to the appropriate directory
-
-```
-cd sagemaker-tensorflow-container/docker/1.14.0/py3
-```
-
-3\. From https://pypi.org/project/tensorflow/1.14.0/#files download the right wheel file for your architecture (Linux, Python 3.6). In this case, the file name should be:
-
-`tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl`
-
-To download, copy the link to the file with a right-click in the browser and then use `wget` in the Terminal console, for example:
-
-```
-wget https://files.pythonhosted.org/.../tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl
-```
-
-4\. If you list the directory contents here, you will notice that there are two Dockerfiles - one made for CPU based nodes and another for GPU based. Since, we will be using CPU machines, lets build the CPU docker image
-
-```
-docker build -t tensorflow-base:1.14.0-cpu-py3 --build-arg py_version=3 --build-arg framework_support_installable=tensorflow-1.14.0-cp36-cp36m-manylinux1_x86_64.whl -f Dockerfile.cpu .
-
-```
-
-Building the docker images should take about 20 minutes. Once finished, you can list the images by running `docker images`. You should see the new base image named `tensorflow-base:1.14.0-cpu-py3`.
-
-5\. Next we create our `final` images by including our code onto the `base` container. In the terminal window, switch to the container directory
+https://docs.aws.amazon.com/dlami/latest/devguide/deep-learning-containers-images.html
 
 ```
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
 ```
 
-6\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below
+1\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below, replacing, in the line starting with `FROM`, `REGION` with the region you are using today, for example `us-west-2`.
 
 ```
 # Build an image that can do training and inference in SageMaker
 
-FROM tensorflow-base:1.14.0-cpu-py3
+FROM 763104351884.dkr.ecr.REGION.amazonaws.com/tensorflow-training:1.14.0-cpu-py36-ubuntu16.04
 
 RUN apt-get update && \
     apt-get install -y nginx
@@ -162,7 +131,7 @@ Hit Escape and then `:wq` to save and exit vim.
 
 We start from the `base` image, add the code directory to our path, copy the code into that directory and finally set the WORKDIR to the same path so any subsequent RUN/ENTRYPOINT commands run by Amazon SageMaker will use this directory.
 
-7\. Build the `final` image
+2\. Build the `final` image
 
 ```
 docker build -t sagemaker-keras-text-class:latest .
@@ -206,7 +175,7 @@ cd ../container/local_test
 
 With an 80/20 split between the training and validation and a simple Feed Forward Neural Network, we get around 78-80% validation accuracy (val_acc) after two epochs – not a bad start!
 
-Try reaching 83-85% validation accouracy before going to the next step. You can test different network architectures (using different hyperparameters) by editing `~/SageMaker/amazon-sagemaker-keras-text-classification/container/train` and create more docker containers (each with a unique name) that you can train local (you don't need to edit the Dockerfile). For example:
+Try reaching 84-85% validation accouracy before going to the next step. You can test different network architectures (using different hyperparameters) by editing `~/SageMaker/amazon-sagemaker-keras-text-classification/container/train` and create more docker containers (each with a unique name) that you can train local (you don't need to edit the Dockerfile). For example:
 
 ```
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
@@ -216,7 +185,7 @@ cd ../container/local_test
 ./train_local.sh sagemaker-keras-text-class-2units-2layers:latest
 ```
 
-When running training locally multiple times, you should confirm (two times) to "remove write-protected regular file". Those files are the model output of the previous training (the ‘news_breaker.h5’ and the ‘tokenizer.pickle’ files).
+When running training locally multiple times, you should confirm when asked to remove some write-protected regular files. Those files are the model output of the previous training (the ‘news_breaker.h5’ and the ‘tokenizer.pickle’ files).
 
 Here's the part of the `train` file where you can change the network architecture to have more units or add new layers:
 
@@ -250,7 +219,7 @@ This is a simple script that uses the ‘Docker run’ command to start the cont
 5\. Now **open another terminal**, move to the `local_test` directory and run ‘predict.sh’. This script issues a request to the flask app using the test news headline in `input.json`:
 
 ```
-cd SageMaker/amazon-sagemaker-keras-text-classification/container/local_test && ./predict.sh input.json application/json
+cd SageMaker/amazon-sagemaker-keras-text-classification/container/local_test && cat input.json && ./predict.sh input.json application/json
 ```
 
 Great! Our model inference implementation responds and is correctly able to categorize this headline as a Health & Medicine story.
