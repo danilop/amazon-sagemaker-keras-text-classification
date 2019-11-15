@@ -104,11 +104,13 @@ All the available AWS DL Containers images are describe din the documentation:
 
 https://docs.aws.amazon.com/dlami/latest/devguide/deep-learning-containers-images.html
 
+1\. Change directory to be in the path where we are going to create the custom container:
+
 ```
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
 ```
 
-1\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below, replacing, in the line starting with `FROM`, `REGION` with the region you are using today, for example `us-west-2`.
+2\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below, replacing, in the line starting with `FROM`, `REGION` with the region you are using today, for example `us-west-2`.
 
 ```
 # Build an image that can do training and inference in SageMaker
@@ -131,7 +133,7 @@ Hit Escape and then `:wq` to save and exit vim.
 
 We start from the `base` image, add the code directory to our path, copy the code into that directory and finally set the WORKDIR to the same path so any subsequent RUN/ENTRYPOINT commands run by Amazon SageMaker will use this directory.
 
-2\. Build the `final` image
+3\. Build the `final` image
 
 ```
 docker build -t sagemaker-keras-text-class:latest .
