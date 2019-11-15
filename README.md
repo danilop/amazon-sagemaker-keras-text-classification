@@ -100,7 +100,7 @@ Instead of building a TensorFlow container from scratch, we are going to use the
 
 AWS DL Containers support TensorFlow, PyTorch, and Apache MXNet. We are going to use TensorFlow today. You can deploy AWS DL Containers on Amazon Sagemaker, Amazon Elastic Kubernetes Service (Amazon EKS), self-managed Kubernetes on Amazon EC2, Amazon Elastic Container Service (Amazon ECS). We are going to deploy using SageMaker for training and inference. The containers are available through Amazon Elastic Container Registry (Amazon ECR) and AWS Marketplace at no cost, you pay only for the resources that you use. In this workshop, we a re going to download the AWS DL Containers images via ECR.
 
-All the available AWS DL Containers images are describe din the documentation:
+For your reference, all available AWS DL Containers images are described in the documentation:
 
 https://docs.aws.amazon.com/dlami/latest/devguide/deep-learning-containers-images.html
 
