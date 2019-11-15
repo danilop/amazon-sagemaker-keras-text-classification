@@ -110,7 +110,7 @@ https://docs.aws.amazon.com/dlami/latest/devguide/deep-learning-containers-image
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
 ```
 
-2\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below, replacing, in the line starting with `FROM`, `REGION` with the region you are using today, for example `us-west-2`.
+2\. Create a new Dockerfile using `vim Dockerfile`, hit `i` to insert and then paste the content below. In the line starting with `FROM`, replace `REGION` with the AWS region you are using today, for example `us-west-2`.
 
 ```
 # Build an image that can do training and inference in SageMaker
