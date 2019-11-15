@@ -206,12 +206,12 @@ cd ../container/local_test
 
 With an 80/20 split between the training and validation and a simple Feed Forward Neural Network, we get around 78-80% validation accuracy (val_acc) after two epochs – not a bad start!
 
-Try reaching 83-85% validation accouracy before going to the next step. You can test different network architectures (using different hyperparameters) by editing `~/SageMaker/amazon-sagemaker-keras-text-classification/container/train` and create more docker containers (each with a unique name) that you can train local (you don't need to edit the Dockerfile):
+Try reaching 83-85% validation accouracy before going to the next step. You can test different network architectures (using different hyperparameters) by editing `~/SageMaker/amazon-sagemaker-keras-text-classification/container/train` and create more docker containers (each with a unique name) that you can train local (you don't need to edit the Dockerfile). For example:
 
 ```
 cd ~/SageMaker/amazon-sagemaker-keras-text-classification/container/
 vim ./sagemaker_keras_text_classification/train
-docker build -t sagemaker-keras-text-class-{N}units-{M}layers:latest .
+docker build -t sagemaker-keras-text-class-2units-2layers:latest .
 ```
 
 Here's the part of the `train` file where you can change the network architecture to have more units or add new layers:
